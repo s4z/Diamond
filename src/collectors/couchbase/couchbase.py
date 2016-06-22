@@ -105,7 +105,7 @@ class CouchBaseCollector(diamond.collector.Collector):
             name = bucket["name"]
             stat = "basicStats"
             for metric, val in bucket[stat].items():
-               fmetric = "{0}.buckets.basic.{1}.{2}".format(pool, name, metric)
+               fmetric = "{0}.buckets.basic.{1}.{2}".format(pool['name'], name, metric)
                self.publish(fmetric, val)
          # also publish stats for bucket
          self.publish_bucket_stats(pool['name'], name)
