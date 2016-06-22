@@ -34,7 +34,6 @@ class CouchBaseCollector(diamond.collector.Collector):
       config_help.update({
          'host':  'Hostname or IP address of the couchbase server',
          'port':  'Port to contact couchbase instance on',
-         'buckets': 'Database(s) to record metrics for, comma separated',
          'username': 'Username to authenticate with',
          'password': 'Password to authenticate with'
       })
@@ -49,7 +48,6 @@ class CouchBaseCollector(diamond.collector.Collector):
      config.update({
       'host': 'localhost',
       'port': 8091,
-      'buckets': '',
       'username': 'admin',
       'password': 'admin'
      })
@@ -123,7 +121,7 @@ class CouchBaseCollector(diamond.collector.Collector):
       if stat in data:
          for key in data[stat].keys():
             for metric, val in data[stat][key].items():
-               fmetric = "{0}.node.storage.{1}.{2}".format(pool, key, metric)
+               fmetric = "default.node.storage.{1}.{2}".format(key, metric)
                self.publish(fmetric, val)
 
       stat = "nodes"
@@ -133,14 +131,14 @@ class CouchBaseCollector(diamond.collector.Collector):
             if "thisNode" in node and node["thisNode"]:
                # record all key,val in interestingStats
                for metric,val in node["interestingStats"].items():
-                  fmetric = "{0}.node.stats.{1}".format(pool, metric)
+                  fmetric = "default.node.stats.{1}".format(metric)
                   self.publish(fmetric, val)
 
       stat = "counters" ## duplicating data for this one as well..
       if stat in data:
          # record all key,val in interestingStats
          for metric,val in node[stat].items():
-            fmetric = "{0}.node.{1}.{2}".format(pool, stat, metric)
+            fmetric = "default.node.{1}.{2}".format(stat, metric)
             self.publish(fmetric, val)
 
 
