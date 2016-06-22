@@ -26,6 +26,17 @@ except ImportError:
    log.info(err)
 
 
+def avg(arr):
+   ret = 0
+   tot = 0
+   items = len(arr)
+   for i in arr:
+      tot += i
+   if items > 0:
+      ret = tot/items
+   return ret
+
+
 class CouchBaseCollector(diamond.collector.Collector):
 
 
@@ -108,7 +119,7 @@ class CouchBaseCollector(diamond.collector.Collector):
       if "op" in data and "samples" in data["op"]:
          for metric, val in data["op"]["samples"].items():
             fmetric = "{0}.buckets.stats.{1}.{2}".format(pool, bucket, metric)
-            self.publish(fmetric, val)
+            self.publish(fmetric, avg(val))
 
 
    def publish_node_stats(self):
@@ -121,7 +132,7 @@ class CouchBaseCollector(diamond.collector.Collector):
       if stat in data:
          for key in data[stat].keys():
             for metric, val in data[stat][key].items():
-               fmetric = "default.node.storage.{1}.{2}".format(key, metric)
+               fmetric = "default.node.storage.{0}.{1}".format(key, metric)
                self.publish(fmetric, val)
 
       stat = "nodes"
@@ -131,15 +142,8 @@ class CouchBaseCollector(diamond.collector.Collector):
             if "thisNode" in node and node["thisNode"]:
                # record all key,val in interestingStats
                for metric,val in node["interestingStats"].items():
-                  fmetric = "default.node.stats.{1}".format(metric)
+                  fmetric = "default.node.stats.{0}".format(metric)
                   self.publish(fmetric, val)
-
-      stat = "counters" ## duplicating data for this one as well..
-      if stat in data:
-         # record all key,val in interestingStats
-         for metric,val in node[stat].items():
-            fmetric = "default.node.{1}.{2}".format(stat, metric)
-            self.publish(fmetric, val)
 
 
    def collect(self):
